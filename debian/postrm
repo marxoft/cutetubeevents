@@ -1,0 +1,35 @@
+#!/bin/sh
+
+set -e
+
+FEEDS_FILE="/home/user/.local/share/data/cutetubeevents/feeds"
+IMAGE_CACHE_PATH="/home/user/.local/share/data/cutetubeevents/cache/"
+
+DBUS_SERVICE="org.hildon.eventfeed"
+DBUS_PATH="/org/hildon/eventfeed"
+DBUS_INTERFACE="org.hildon.eventfeed"
+
+case "$1" in
+    purge|remove)
+    if [ -f $FEEDS_FILE ]
+        then
+            for ID in $(awk < $FEEDS_FILE 'BEGIN {OFS="\t"}; {print "cutetube_events_"$1"_"$2"_"$3}')
+            do
+                su -c "dbus-send --type=method_call --dest=$DBUS_SERVICE $DBUS_PATH $DBUS_INTERFACE.removeItemsBySourceName string:'$ID'" - user
+            done
+    fi
+
+    if [ -d $IMAGE_CACHE_PATH ]
+        then
+            su -c "rm -R $IMAGE_CACHE_PATH" - user
+    fi
+    
+    su -c "dbus-send --type=method_call --dest=$DBUS_SERVICE $DBUS_PATH $DBUS_INTERFACE.removeRefreshAction string:/opt/cutetubeevents/bin/cutetubeevents" - user
+    ;;
+    
+    *)
+    
+    ;;
+esac
+
+exit 0
