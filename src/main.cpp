@@ -23,7 +23,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
     app.setOrganizationName("cuteTube Events");
     app.setApplicationName("cuteTube Events");
-    app.setApplicationVersion("0.0.1");
+    app.setApplicationVersion("0.1.0");
     
     QSslConfiguration config = QSslConfiguration::defaultConfiguration();
     config.setProtocol(QSsl::TlsV1);
