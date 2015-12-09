@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=cuteTube Events
-Icon=cutetube2
+Icon=cutetubeevents
 Categories=Feeds
 Type=qml
 Exec=/opt/cutetubeevents/settings/SettingsDialog.qml

@@ -18,6 +18,9 @@ SOURCES += \
 desktop.files = desktop/cutetubeevents.desktop
 desktop.path = /opt/hildonevents/settings
 
+icon.files = desktop/cutetubeevents.png
+icon.path = /usr/share/icons/hicolor/64x64/apps
+
 settings.files = \
     src/settings/DailymotionUserDialog.qml \
     src/settings/NewFeedDialog.qml \
@@ -32,4 +35,5 @@ target.path = /opt/cutetubeevents/bin
 INSTALLS += \
     target \
     desktop \
+    icon \
     settings
