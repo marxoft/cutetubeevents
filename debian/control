@@ -8,7 +8,7 @@ Standards-Version: 3.7.3
 
 Package: cutetubeevents
 Architecture: armel
-Depends: ${shlibs:Depends}, ${misc:Depends}, cutetube2 (>= 0.2.5), hildonevents (>= 0.3.0), qdailymotion, qvimeo, qyoutube, qdailymotion-qml, qvimeo-qml, qyoutube-qml
+Depends: ${shlibs:Depends}, ${misc:Depends}, hildonevents (>= 0.3.0), qdailymotion, qvimeo, qyoutube, qdailymotion-qml, qvimeo-qml, qyoutube-qml
 Description: Fetches videos from YouTube, Dailymotion and Vimeo and posts events to Hildon Event Feed
 XB-Maemo-Display-Name: cuteTube Events
 XB-Maemo-Icon-26:
