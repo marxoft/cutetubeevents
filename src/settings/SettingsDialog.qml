@@ -32,8 +32,10 @@ Dialog {
             right: button.left
             rightMargin: platformStyle.paddingMedium
             top: parent.top
-            bottom: parent.bottom
+            bottom: column.top
+            bottomMargin: platformStyle.paddingMedium
         }
+        clip: true
         horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
         model: ListModel {
             id: feedsModel
@@ -89,6 +91,29 @@ Dialog {
         }
     }
     
+    Column {
+        id: column
+        
+        anchors {
+            left: parent.left
+            right: button.left
+            rightMargin: platformStyle.paddingMedium
+            bottom: parent.bottom
+        }
+        spacing: platformStyle.paddingMedium
+        
+        Label {
+            width: parent.width
+            text: qsTr("Custom launch action (use %U in place of URL)")
+        }
+        
+        TextField {
+            id: actionField
+            
+            width: parent.width
+        }
+    }
+    
     DialogButtonStyle {
         id: buttonStyle
     }
@@ -113,15 +138,34 @@ Dialog {
     
     File {
         id: file
-        
-        fileName: "/home/user/.local/share/data/cutetubeevents/feeds"
     }
     
     QtObject {
         id: internal
+        
+        property string actionFile: "/home/user/.local/share/data/cutetubeevents/action"
+        property string feedsFile: "/home/user/.local/share/data/cutetubeevents/feeds"
+        
+        function readAction() {
+            file.fileName = actionFile;
+            
+            if (file.open(File.ReadOnly | File.Text)) {
+                actionField.text = file.readLine();
+            }
+        }
+        
+        function writeAction() {
+            file.fileName = actionFile;
+            
+            if ((dir.mkpath(dir.path)) && (file.open(File.WriteOnly | File.Text))) {
+                file.write(actionField.text);
+                file.close();
+            }
+        }
                 
         function readFeeds() {
             feedsModel.clear();
+            file.fileName = feedsFile;
             
             if (file.open(File.ReadOnly | File.Text)) {                
                 while (!file.atEnd) {
@@ -139,6 +183,8 @@ Dialog {
         }
         
         function writeFeeds() {
+            file.fileName = feedsFile;
+            
             if ((dir.mkpath(dir.path)) && (file.open(File.WriteOnly | File.Text))) {
                 for (var i = 0; i < feedsModel.count; i++) {
                     var feed = feedsModel.get(i);
@@ -166,6 +212,18 @@ Dialog {
         }
     }
     
-    onStatusChanged: if (status == DialogStatus.Opening) internal.readFeeds();
+    onStatusChanged: {
+        switch (status) {
+        case DialogStatus.Opening: {
+            internal.readFeeds();
+            internal.readAction();
+            break;
+        }
+        case DialogStatus.Closing:
+            internal.writeAction();
+            break;
+        default:
+            break;
+        }
+    }
 }
-    

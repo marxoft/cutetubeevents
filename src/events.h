@@ -61,6 +61,8 @@ private:
     
     void nextFeed();
     
+    void readAction();
+    
     void readFeeds();
     void writeFeeds();
     
@@ -92,6 +94,9 @@ private:
     QList<Feed> m_feeds;
     QList<QVariantMap> m_events;
     QString m_imageFileName;
+
+    QString m_action;
+    bool m_useCustomAction;
 };
     
 #endif // EVENTS_H

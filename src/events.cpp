@@ -27,14 +27,12 @@
 #include <QNetworkReply>
 #include <QRegExp>
 
-static const QString CONFIG_FILE("/home/user/.local/share/data/cutetubeevents/feeds");
+static const QString ACTION_FILE("/home/user/.local/share/data/cutetubeevents/action");
+static const QString FEEDS_FILE("/home/user/.local/share/data/cutetubeevents/feeds");
 
 static const QString IMAGE_CACHE_PATH("/home/user/.local/share/data/cutetubeevents/cache/");
 
-static const QString DEFAULT_ICON("cutetube2");
-
-static const QString DEFAULT_ACTION("dbus-send --type=method_call --print-reply --dest=org.marxoft.cutetube2 / \
-org.marxoft.cutetube2.showResource string:\"%1\"");
+static const QString DEFAULT_ICON("cutetubeevents");
 
 static const QString DBUS_SERVICE("org.hildon.eventfeed");
 static const QString DBUS_PATH("/org/hildon/eventfeed");
@@ -65,7 +63,8 @@ Events::Events(QObject *parent) :
     m_vimeoRequest(0),
     m_youtubeRequest(0),
     m_nam(0),
-    m_index(-1)
+    m_index(-1),
+    m_useCustomAction(false)
 {
 }
 
@@ -76,6 +75,7 @@ void Events::getEvents() {
     
     m_index = -1;
     readFeeds();
+    readAction();
     
     if (m_feeds.isEmpty()) {
         emit finished();
@@ -264,9 +264,13 @@ void Events::parseDailymotionFeed() {
         event["footer"] = video.value("owner.screenname");
         event["timestamp"] = date.toString(Qt::ISODate);
         event["url"] = video.value("url");
-        event["action"] = DEFAULT_ACTION.arg(event.value("url").toString());
         event["sourceName"] = sourceName;
         event["sourceDisplayName"] = "cuteTube";
+        
+        if (m_useCustomAction) {
+            event["action"] = m_action.arg(event.value("url").toString());
+        }
+        
         m_events << event;
     }
     
@@ -303,9 +307,13 @@ void Events::parseVimeoFeed() {
         event["footer"] = video.value("user").toMap().value("name");
         event["timestamp"] = date.toString(Qt::ISODate);
         event["url"] = QString("https://vimeo.com/%1").arg(video.value("uri").toString().section('/', -1));
-        event["action"] = DEFAULT_ACTION.arg(event.value("url").toString());
         event["sourceName"] = sourceName;
         event["sourceDisplayName"] = "cuteTube";
+        
+        if (m_useCustomAction) {
+            event["action"] = m_action.arg(event.value("url").toString());
+        }
+        
         m_events << event;
     }
     
@@ -344,9 +352,13 @@ void Events::parseYouTubeFeed() {
         event["timestamp"] = date.toString(Qt::ISODate);
         event["url"] = QString("https://www.youtube.com/watch?v=%1")
                        .arg(video.value("id").toMap().value("videoId").toString());
-        event["action"] = DEFAULT_ACTION.arg(event.value("url").toString());
         event["sourceName"] = sourceName;
         event["sourceDisplayName"] = "cuteTube";
+        
+        if (m_useCustomAction) {
+            event["action"] = m_action.arg(event.value("url").toString());
+        }
+        
         m_events << event;
     }
     
@@ -354,8 +366,25 @@ void Events::parseYouTubeFeed() {
     nextFeed();
 }
 
+void Events::readAction() {
+    QFile file(ACTION_FILE);
+    
+    if (file.open(QFile::ReadOnly | QFile::Text)) {
+        m_action = QString::fromUtf8(file.readLine());
+        file.close();
+    }
+    
+    if (!m_action.isEmpty()) {
+        m_action.replace("%U", "%1");
+        m_useCustomAction = true;
+    }
+    else {
+        m_useCustomAction = false;
+    }
+}
+
 void Events::readFeeds() {
-    QFile file(CONFIG_FILE);
+    QFile file(FEEDS_FILE);
     
     if (file.open(QFile::ReadOnly | QFile::Text)) {
         while (!file.atEnd()) {
@@ -377,7 +406,7 @@ void Events::readFeeds() {
 }
 
 void Events::writeFeeds() {
-    QFile file(CONFIG_FILE);
+    QFile file(FEEDS_FILE);
     
     if (file.open(QFile::WriteOnly | QFile::Text)) {
         for (int i = 0; i < m_feeds.size(); i++) {
