@@ -22,7 +22,7 @@ Dialog {
     id: root
     
     title: "cuteTube Events"
-    height: 350
+    height: 360
     
     ListView {
         id: view
@@ -95,15 +95,15 @@ Dialog {
         id: column
         
         anchors {
-            left: parent.left
-            right: button.left
-            rightMargin: platformStyle.paddingMedium
+            left: view.left
+            right: view.right
             bottom: parent.bottom
         }
         spacing: platformStyle.paddingMedium
         
         Label {
             width: parent.width
+            wrapMode: Text.WordWrap
             text: qsTr("Custom launch action (use %U in place of URL)")
         }
         
@@ -114,10 +114,6 @@ Dialog {
         }
     }
     
-    DialogButtonStyle {
-        id: buttonStyle
-    }
-
     Button {
         id: button
         
@@ -125,7 +121,7 @@ Dialog {
             right: parent.right
             bottom: parent.bottom
         }
-        style: buttonStyle
+        style: DialogButtonStyle {}
         text: qsTr("New")
         onClicked: feedDialog.createObject(root)
     }
@@ -151,6 +147,7 @@ Dialog {
             
             if (file.open(File.ReadOnly | File.Text)) {
                 actionField.text = file.readLine();
+                file.close();
             }
         }
         
@@ -209,6 +206,41 @@ Dialog {
             }
             onStatusChanged: if (status == DialogStatus.Closed) destroy();
             Component.onCompleted: open()
+        }
+    }
+
+    contentItem.states: State {
+        name: "Portrait"
+        when: screen.currentOrientation == Qt.WA_Maemo5PortraitOrientation
+
+        AnchorChanges {
+            target: view
+            anchors.right: parent.right
+        }
+
+        PropertyChanges {
+            target: view
+            anchors.rightMargin: 0
+        }
+
+        AnchorChanges {
+            target: column
+            anchors.bottom: button.top
+        }
+
+        PropertyChanges {
+            target: column
+            anchors.bottomMargin: platformStyle.paddingMedium
+        }
+
+        PropertyChanges {
+            target: button
+            width: parent.width
+        }
+
+        PropertyChanges {
+            target: root
+            height: 680
         }
     }
     

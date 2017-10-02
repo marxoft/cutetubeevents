@@ -28,7 +28,7 @@ Dialog {
                                                     safeSearch: "none"});
     }
     
-    height: 350
+    height: 360
     title: qsTr("Select channel")
     showProgressIndicator: userModel.status == QYouTube.ResourcesRequest.Loading
     
@@ -83,5 +83,15 @@ Dialog {
         color: platformStyle.disabledTextColor
         text: qsTr("No channels")
         visible: (userModel.status != QYouTube.ResourcesRequest.Loading) && (userModel.count == 0)
+    }
+
+    contentItem.states: State {
+        name: "Portrait"
+        when: screen.currentOrientation == Qt.WA_Maemo5PortraitOrientation
+
+        PropertyChanges {
+            target: root
+            height: 680
+        }
     }
 }

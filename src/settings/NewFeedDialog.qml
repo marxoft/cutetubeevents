@@ -26,7 +26,7 @@ Dialog {
     property int maxResults
     
     title: qsTr("New feed")
-    height: Math.min(350, flow.height + platformStyle.paddingMedium)
+    height: Math.min(360, flow.height + platformStyle.paddingMedium)
     
     Flickable {
         id: flickable
@@ -184,5 +184,30 @@ Dialog {
                 reload(queryField.text);
             }
         }
-    }    
+    }
+
+    contentItem.states: State {
+        name: "Portrait"
+        when: screen.currentOrientation == Qt.WA_Maemo5PortraitOrientation
+
+        AnchorChanges {
+            target: flickable
+            anchors.right: parent.right
+        }
+
+        PropertyChanges {
+            target: flickable
+            anchors.rightMargin: 0
+        }
+
+        PropertyChanges {
+            target: acceptButton
+            width: parent.width
+        }
+
+        PropertyChanges {
+            target: root
+            height: Math.min(680, flow.height + acceptButton.height + platformStyle.paddingMedium * 2)
+        }
+    }
 }

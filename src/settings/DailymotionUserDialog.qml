@@ -28,7 +28,7 @@ Dialog {
                        ["id", "avatar_60_url", "screenname"]);
     }
     
-    height: 350
+    height: 360
     title: qsTr("Select channel")
     showProgressIndicator: userModel.status == QDailymotion.ResourcesRequest.Loading
     
@@ -81,5 +81,15 @@ Dialog {
         color: platformStyle.disabledTextColor
         text: qsTr("No channels")
         visible: (userModel.status != QDailymotion.ResourcesRequest.Loading) && (userModel.count == 0)
+    }
+
+    contentItem.states: State {
+        name: "Portrait"
+        when: screen.currentOrientation == Qt.WA_Maemo5PortraitOrientation
+
+        PropertyChanges {
+            target: root
+            height: 680
+        }
     }
 }

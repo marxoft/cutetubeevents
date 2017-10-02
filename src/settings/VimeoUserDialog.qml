@@ -27,7 +27,7 @@ Dialog {
         userModel.list("/users", {per_page: 20, query: query, sort: "relevant"});
     }
     
-    height: 350
+    height: 360
     title: qsTr("Select channel")
     showProgressIndicator: userModel.status == QVimeo.ResourcesRequest.Loading
     
@@ -84,5 +84,15 @@ Dialog {
         color: platformStyle.disabledTextColor
         text: qsTr("No channels")
         visible: (userModel.status != QVimeo.ResourcesRequest.Loading) && (userModel.count == 0)
+    }
+
+    contentItem.states: State {
+        name: "Portrait"
+        when: screen.currentOrientation == Qt.WA_Maemo5PortraitOrientation
+
+        PropertyChanges {
+            target: root
+            height: 680
+        }
     }
 }
