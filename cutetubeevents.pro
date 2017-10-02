@@ -1,7 +1,7 @@
 TARGET = cutetubeevents
 QT += dbus network
 
-LIBS += -L/usr/lib -lqyoutube -lqdailymotion -lqvimeo
+LIBS += -L/opt/lib -lqyoutube -lqdailymotion -lqvimeo
 CONFIG += link_prl
 PKGCONFIG += \
     libqyoutube \
